@@ -1,16 +1,53 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Simple Website</title>
+    <title>My Simple Music Website</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        input[type="file"] {
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        audio {
+            margin-top: 20px;
+            border: 2px solid #333;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Welcome to My Website!</h1>
-    <p>This is the homepage of my website.</p>
-    
-    <!-- Image Added Here -->
-    <img src="https://files.catbox.moe/9htjxp.jpg" alt="Sample Image" style="width: 100%; max-width: 400px;">
+    <h1>Welcome to My Music Website!</h1>
+    <p>Select a song from your device to play:</p>
 
-    <!-- Or if image is local -->
-    <!-- <img src="image.jpg" alt="Local Image" style="width: 100%; max-width: 400px;"> -->
+    <!-- File input to select song from user's device -->
+    <input type="file" id="fileInput" accept="audio/*" onchange="loadAudio()" />
+    
+    <!-- Audio Player -->
+    <audio id="audioPlayer" controls>
+        <source id="audioSource" src="" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+
+    <script>
+        // Function to load selected audio file into the player
+        function loadAudio() {
+            var fileInput = document.getElementById("fileInput");
+            var audioSource = document.getElementById("audioSource");
+            var audioPlayer = document.getElementById("audioPlayer");
+
+            var file = fileInput.files[0];  // Get the selected file
+
+            if (file) {
+                var objectURL = URL.createObjectURL(file);  // Create URL for the file
+                audioSource.src = objectURL;  // Set the source of the audio player
+                audioPlayer.load();  // Reload the audio player with the new source
+                audioPlayer.play();  // Play the song automatically
+            }
+        }
+    </script>
 </body>
 </html>
