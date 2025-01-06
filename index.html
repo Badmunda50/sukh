@@ -17,6 +17,15 @@
             border: 2px solid #333;
             border-radius: 10px;
         }
+        .controls {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 0 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -32,6 +41,12 @@
         Your browser does not support the audio element.
     </audio>
 
+    <!-- Bass Boost Controls -->
+    <div class="controls">
+        <button onclick="adjustBass(-2)">- Bass</button>
+        <button onclick="adjustBass(2)">+ Bass</button>
+    </div>
+
     <script>
         // Initialize the Web Audio API context
         var audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -39,6 +54,7 @@
         var audioSourceNode;
         var gainNode;
         var bassFilter;
+        var currentBassGain = 10;  // Default bass boost level (in dB)
 
         function loadAudio() {
             var fileInput = document.getElementById("fileInput");
@@ -67,12 +83,18 @@
             bassFilter = audioContext.createBiquadFilter();
             bassFilter.type = 'lowshelf';  // Lowshelf filter is used to boost low frequencies
             bassFilter.frequency.setValueAtTime(200, audioContext.currentTime);  // Frequencies below 200 Hz will be boosted
-            bassFilter.gain.setValueAtTime(10, audioContext.currentTime);  // Boost gain by 10 dB (adjust as needed)
+            bassFilter.gain.setValueAtTime(currentBassGain, audioContext.currentTime);  // Set initial bass gain (default)
 
             // Connect the Audio Nodes: Source -> Bass Filter -> Gain Node -> Audio Context's Destination (Speakers)
             audioSourceNode.connect(bassFilter);
             bassFilter.connect(gainNode);
             gainNode.connect(audioContext.destination);
+        }
+
+        // Function to adjust bass level (increase or decrease)
+        function adjustBass(amount) {
+            currentBassGain += amount;  // Increase or decrease bass gain
+            bassFilter.gain.setValueAtTime(currentBassGain, audioContext.currentTime);  // Apply new bass gain
         }
     </script>
 </body>
