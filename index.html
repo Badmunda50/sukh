@@ -33,20 +33,46 @@
     </audio>
 
     <script>
-        // Function to load selected audio file into the player
+        // Initialize the Web Audio API context
+        var audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        var audioElement;
+        var audioSourceNode;
+        var gainNode;
+        var bassFilter;
+
         function loadAudio() {
             var fileInput = document.getElementById("fileInput");
-            var audioSource = document.getElementById("audioSource");
             var audioPlayer = document.getElementById("audioPlayer");
-
             var file = fileInput.files[0];  // Get the selected file
 
             if (file) {
                 var objectURL = URL.createObjectURL(file);  // Create URL for the file
-                audioSource.src = objectURL;  // Set the source of the audio player
+                audioPlayer.src = objectURL;  // Set the source of the audio player
                 audioPlayer.load();  // Reload the audio player with the new source
                 audioPlayer.play();  // Play the song automatically
+
+                // Set up the Web Audio API components
+                setupAudioProcessing(audioPlayer);
             }
+        }
+
+        function setupAudioProcessing(audioElement) {
+            // Create an Audio Source Node from the HTML Audio Element
+            audioSourceNode = audioContext.createMediaElementSource(audioElement);
+
+            // Create a Gain Node to control the volume
+            gainNode = audioContext.createGain();
+            
+            // Create a Bass Boost Filter (Lowpass Filter with emphasis on bass frequencies)
+            bassFilter = audioContext.createBiquadFilter();
+            bassFilter.type = 'lowshelf';  // Lowshelf filter is used to boost low frequencies
+            bassFilter.frequency.setValueAtTime(200, audioContext.currentTime);  // Frequencies below 200 Hz will be boosted
+            bassFilter.gain.setValueAtTime(10, audioContext.currentTime);  // Boost gain by 10 dB (adjust as needed)
+
+            // Connect the Audio Nodes: Source -> Bass Filter -> Gain Node -> Audio Context's Destination (Speakers)
+            audioSourceNode.connect(bassFilter);
+            bassFilter.connect(gainNode);
+            gainNode.connect(audioContext.destination);
         }
     </script>
 </body>
