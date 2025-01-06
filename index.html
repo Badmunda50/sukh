@@ -47,6 +47,12 @@
         <button onclick="adjustBass(2)">+ Bass</button>
     </div>
 
+    <!-- Volume Controls -->
+    <div class="controls">
+        <button onclick="adjustVolume(-0.1)">- Volume</button>
+        <button onclick="adjustVolume(0.1)">+ Volume</button>
+    </div>
+
     <script>
         // Initialize the Web Audio API context
         var audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -55,6 +61,7 @@
         var gainNode;
         var bassFilter;
         var currentBassGain = 10;  // Default bass boost level (in dB)
+        var currentVolume = 1;  // Default volume (1 is the normal volume level)
 
         function loadAudio() {
             var fileInput = document.getElementById("fileInput");
@@ -89,12 +96,23 @@
             audioSourceNode.connect(bassFilter);
             bassFilter.connect(gainNode);
             gainNode.connect(audioContext.destination);
+
+            // Set initial volume
+            gainNode.gain.setValueAtTime(currentVolume, audioContext.currentTime);
         }
 
         // Function to adjust bass level (increase or decrease)
         function adjustBass(amount) {
             currentBassGain += amount;  // Increase or decrease bass gain
             bassFilter.gain.setValueAtTime(currentBassGain, audioContext.currentTime);  // Apply new bass gain
+        }
+
+        // Function to adjust volume level (increase or decrease)
+        function adjustVolume(amount) {
+            currentVolume += amount;  // Increase or decrease volume
+            if (currentVolume < 0) currentVolume = 0;  // Prevent volume from going negative
+            if (currentVolume > 1) currentVolume = 1;  // Prevent volume from going above 1
+            gainNode.gain.setValueAtTime(currentVolume, audioContext.currentTime);  // Apply new volume level
         }
     </script>
 </body>
