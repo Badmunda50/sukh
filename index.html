@@ -58,9 +58,12 @@
     <audio id="audioPlayer" controls></audio>
     <ul id="playlist"></ul>
     <div class="controls">
+        <button onclick="playPrevious()">Back Song</button>
+        <button onclick="playNext()">Next Song</button>
+    </div>
+    <div class="controls">
         <button onclick="adjustBass(-2)">- Bass</button>
         <button onclick="adjustBass(2)">+ Bass</button>
-        <button onclick="playNext()">Next Song</button>
     </div>
     <div class="controls">
         <button onclick="adjustVolume(-0.1)">- Volume</button>
@@ -79,7 +82,7 @@
         <div class="bar"></div>
     </div>
     <footer>
-        Made by <a href="https://t.me/yourgroupname" target="_blank">Your Telegram Group</a>
+        ᴍᴀᴅᴇ ʙʏ  <a href="https://t.me/ll_THE_BAD_BOT_ll" target="_blank">Your Telegram Group</a>
     </footer>
     <script>
         let audioContext = null;
@@ -141,6 +144,14 @@
                 playSong(currentSongIndex + 1);
             } else {
                 alert("This is the last song in the playlist!");
+            }
+        }
+
+        function playPrevious() {
+            if (currentSongIndex > 0) {
+                playSong(currentSongIndex - 1);
+            } else {
+                alert("This is the first song in the playlist!");
             }
         }
 
