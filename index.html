@@ -38,6 +38,17 @@
             height: 20px;
             margin: 0 3px;
         }
+        footer {
+            margin-top: 30px;
+            font-size: 14px;
+        }
+        footer a {
+            color: blue;
+            text-decoration: none;
+        }
+        footer a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -49,6 +60,7 @@
     <div class="controls">
         <button onclick="adjustBass(-2)">- Bass</button>
         <button onclick="adjustBass(2)">+ Bass</button>
+        <button onclick="playNext()">Next Song</button>
     </div>
     <div class="controls">
         <button onclick="adjustVolume(-0.1)">- Volume</button>
@@ -66,6 +78,9 @@
         <div class="bar"></div>
         <div class="bar"></div>
     </div>
+    <footer>
+        Made by <a href="https://t.me/yourgroupname" target="_blank">Your Telegram Group</a>
+    </footer>
     <script>
         let audioContext = null;
         let audioSourceNode = null;
@@ -73,6 +88,8 @@
         let bassFilter = null;
         let currentBassGain = 10;
         let currentVolume = 1;
+        let currentSongIndex = 0; // To track the current song index
+        let playlistFiles = []; // Array to store playlist files
 
         function loadPlaylist() {
             const fileInput = document.getElementById("fileInput");
@@ -80,24 +97,27 @@
             const files = fileInput.files;
 
             playlist.innerHTML = ""; // Clear playlist
+            playlistFiles = Array.from(files); // Store files in a global array
 
-            if (files.length > 10) {
+            if (playlistFiles.length > 10) {
                 alert("Please select up to 10 songs.");
                 return;
             }
 
-            Array.from(files).forEach((file, index) => {
+            playlistFiles.forEach((file, index) => {
                 const listItem = document.createElement("li");
                 listItem.textContent = file.name;
                 listItem.style.cursor = "pointer";
-                listItem.onclick = () => playSong(file);
+                listItem.onclick = () => playSong(index);
                 playlist.appendChild(listItem);
 
-                if (index === 0) playSong(file);
+                if (index === 0) playSong(index);
             });
         }
 
-        function playSong(file) {
+        function playSong(index) {
+            currentSongIndex = index; // Update current song index
+            const file = playlistFiles[index];
             const audioPlayer = document.getElementById("audioPlayer");
             const objectURL = URL.createObjectURL(file);
 
@@ -111,6 +131,17 @@
                     initializeAudioContext(audioPlayer);
                 }
             };
+
+            // Automatically play the next song when the current song ends
+            audioPlayer.onended = playNext;
+        }
+
+        function playNext() {
+            if (currentSongIndex + 1 < playlistFiles.length) {
+                playSong(currentSongIndex + 1);
+            } else {
+                alert("This is the last song in the playlist!");
+            }
         }
 
         function initializeAudioContext(audioElement) {
