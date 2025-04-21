@@ -18,11 +18,7 @@
         h1 {
             margin-top: 30px;
             font-size: 2.5em;
-            animation: colorCycling 2s infinite;
-        }
-
-        p {
-            font-size: 1.2em;
+            animation: colorCycling1 3s infinite;
         }
 
         audio {
@@ -40,7 +36,26 @@
             cursor: pointer;
             border: none;
             border-radius: 5px;
-            animation: buttonColorCycling 2s infinite;
+        }
+
+        .controls button:nth-child(1) {
+            animation: colorCycling2 4s infinite;
+        }
+
+        .controls button:nth-child(2) {
+            animation: colorCycling3 5s infinite;
+        }
+
+        .controls button:nth-child(3) {
+            animation: colorCycling4 6s infinite;
+        }
+
+        .controls button:nth-child(4) {
+            animation: colorCycling5 7s infinite;
+        }
+
+        .controls button:nth-child(5) {
+            animation: colorCycling6 8s infinite;
         }
 
         footer {
@@ -63,34 +78,60 @@
             border-radius: 50px;
             cursor: pointer;
             text-transform: uppercase;
-            animation: glowing 1s infinite alternate, buttonColorCycling 2s infinite;
+            animation: colorCycling7 9s infinite;
         }
 
-        @keyframes glowing {
-            from {
-                box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
-            }
-            to {
-                box-shadow: 0 0 20px rgba(0, 255, 0, 1);
-            }
-        }
-
-        @keyframes colorCycling {
+        @keyframes colorCycling1 {
             0% { color: red; }
             33% { color: yellow; }
             66% { color: blue; }
             100% { color: green; }
         }
 
-        @keyframes buttonColorCycling {
+        @keyframes colorCycling2 {
             0% { background-color: red; }
             33% { background-color: yellow; }
             66% { background-color: blue; }
             100% { background-color: green; }
         }
 
+        @keyframes colorCycling3 {
+            0% { background-color: orange; }
+            33% { background-color: purple; }
+            66% { background-color: pink; }
+            100% { background-color: teal; }
+        }
+
+        @keyframes colorCycling4 {
+            0% { background-color: cyan; }
+            33% { background-color: lime; }
+            66% { background-color: magenta; }
+            100% { background-color: silver; }
+        }
+
+        @keyframes colorCycling5 {
+            0% { background-color: gold; }
+            33% { background-color: brown; }
+            66% { background-color: navy; }
+            100% { background-color: maroon; }
+        }
+
+        @keyframes colorCycling6 {
+            0% { background-color: indigo; }
+            33% { background-color: violet; }
+            66% { background-color: coral; }
+            100% { background-color: chartreuse; }
+        }
+
+        @keyframes colorCycling7 {
+            0% { background-color: black; color: white; }
+            33% { background-color: gray; color: black; }
+            66% { background-color: white; color: black; }
+            100% { background-color: green; color: yellow; }
+        }
+
         .dynamic-color {
-            animation: colorCycling 2s infinite;
+            animation: colorCycling1 3s infinite;
         }
     </style>
 </head>
