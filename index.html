@@ -29,6 +29,23 @@
             max-width: 600px;
         }
 
+        #progressBar {
+            width: 90%;
+            height: 10px;
+            margin: 20px auto;
+            background: linear-gradient(90deg, red, yellow, blue, green);
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        #progressFill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, red, yellow, blue, green);
+            animation: progressColorCycling 5s infinite;
+        }
+
         .controls button {
             padding: 10px 20px;
             font-size: 1em;
@@ -54,7 +71,8 @@
             animation: colorCycling5 7s infinite;
         }
 
-        .controls button:nth-child(5) {
+        .controls button:nth-child(5),
+        .controls button:nth-child(6) {
             animation: colorCycling6 8s infinite;
         }
 
@@ -130,6 +148,14 @@
             100% { background-color: green; color: yellow; }
         }
 
+        @keyframes progressColorCycling {
+            0% { background-color: red; }
+            25% { background-color: yellow; }
+            50% { background-color: blue; }
+            75% { background-color: green; }
+            100% { background-color: orange; }
+        }
+
         .dynamic-color {
             animation: colorCycling1 3s infinite;
         }
@@ -139,6 +165,9 @@
     <h1>Welcome to My Music Website!</h1>
     <button class="controls" onclick="selectSongs()">Songs</button>
     <audio id="audioPlayer" controls></audio>
+    <div id="progressBar">
+        <div id="progressFill"></div>
+    </div>
     <ul id="playlist"></ul>
     <div class="controls">
         <button onclick="playPrevious()">Back</button>
@@ -162,6 +191,7 @@
         const badLogo = document.getElementById("badLogo");
         const audioPlayer = document.getElementById("audioPlayer");
         const playlist = document.getElementById("playlist");
+        const progressFill = document.getElementById("progressFill");
 
         // Initialize the Web Audio API
         function initializeAudio() {
@@ -177,6 +207,12 @@
                 source.connect(bassFilter).connect(gainNode).connect(audioContext.destination);
             }
         }
+
+        // Update progress bar
+        audioPlayer.ontimeupdate = () => {
+            const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            progressFill.style.width = `${progress}%`;
+        };
 
         // Select songs using a file picker
         function selectSongs() {
@@ -249,11 +285,6 @@
             currentBassGain += amount;
             bassFilter.gain.value = currentBassGain;
         }
-
-        // Reset dynamic styles when audio ends
-        audioPlayer.onended = () => {
-            Array.from(playlist.children).forEach((item) => item.classList.remove("dynamic-color"));
-        };
     </script>
 </body>
 </html>
