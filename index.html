@@ -1,33 +1,49 @@
+</body>
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Music Website</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             text-align: center;
-            margin-top: 50px;
+            margin: 0;
+            padding: 0;
             background: url('https://files.catbox.moe/n97fkk.jpg') no-repeat center center fixed;
             background-size: cover;
-            color: white; /* Text color to contrast with the background */
+            color: white;
         }
+
+        h1 {
+            margin-top: 30px;
+            font-size: 2.5em;
+        }
+
+        p {
+            font-size: 1.2em;
+        }
+
         input[type="file"], input[type="text"] {
             padding: 10px;
-            margin-bottom: 20px;
+            margin: 15px 0;
             width: 80%;
             max-width: 400px;
+            font-size: 1em;
         }
+
         audio {
             margin-top: 20px;
             border: 2px solid #fff;
             border-radius: 10px;
+            width: 90%;
+            max-width: 600px;
         }
-        .controls {
-            margin-top: 20px;
-        }
-        button {
+
+        .controls button {
             padding: 10px 20px;
-            font-size: 16px;
+            font-size: 1em;
             margin: 10px;
             cursor: pointer;
             background-color: rgba(0, 0, 0, 0.6);
@@ -35,9 +51,11 @@
             border: none;
             border-radius: 5px;
         }
-        button:hover {
+
+        .controls button:hover {
             background-color: rgba(255, 255, 255, 0.2);
         }
+
         .visualizer {
             margin-top: 20px;
             display: flex;
@@ -45,21 +63,64 @@
             align-items: flex-end;
             height: 150px;
         }
+
         .bar {
             width: 10px;
             height: 20px;
             margin: 0 3px;
         }
+
         footer {
             margin-top: 30px;
             font-size: 14px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
         }
+
         footer a {
+            margin: 10px;
             color: lightblue;
             text-decoration: none;
         }
+
         footer a:hover {
             text-decoration: underline;
+        }
+
+        .social-icons img {
+            width: 40px;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+
+        .animated-button {
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: white;
+            background: linear-gradient(45deg, #ff0000, #ff7300, #ffeb00);
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            text-transform: uppercase;
+            animation: glow 1.5s infinite alternate;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+        }
+
+        .animated-button:hover {
+            background: linear-gradient(45deg, #ff7300, #ffeb00, #ff0000);
+        }
+
+        @keyframes glow {
+            from {
+                box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+            }
+            to {
+                box-shadow: 0 0 20px rgba(255, 255, 255, 1);
+            }
         }
     </style>
 </head>
@@ -70,16 +131,12 @@
     <audio id="audioPlayer" controls></audio>
     <ul id="playlist"></ul>
     <div class="controls">
-        <button onclick="playPrevious()">Back Song</button>
-        <button onclick="playNext()">Next Song</button>
-    </div>
-    <div class="controls">
-        <button onclick="adjustBass(-2)">- Bass</button>
-        <button onclick="adjustBass(2)">+ Bass</button>
-    </div>
-    <div class="controls">
+        <button onclick="playPrevious()">Back</button>
+        <button onclick="playNext()">Next</button>
         <button onclick="adjustVolume(-0.1)">- Volume</button>
         <button onclick="adjustVolume(0.1)">+ Volume</button>
+        <button onclick="adjustBass(-2)">- Bass</button>
+        <button onclick="adjustBass(2)">+ Bass</button>
     </div>
     <div class="controls">
         <input type="text" id="youtubeUrlInput" placeholder="Enter YouTube URL" />
@@ -98,11 +155,18 @@
         <div class="bar"></div>
     </div>
     <footer>
-        Made by <a href="https://t.me/ll_THE_BAD_BOT_ll" target="_blank">ꜱᴜᴋʜ</a>
+        <div class="social-icons">
+            <a href="https://instagram.com" target="_blank">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png" alt="Instagram">
+            </a>
+            <a href="https://t.me/ll_THE_BAD_BOT_ll" target="_blank">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/8/82/Telegram_logo.svg" alt="Telegram">
+            </a>
+        </div>
+        <button class="animated-button" onclick="window.open('https://t.me/ll_THE_BAD_BOT_ll', '_blank')">Bad</button>
     </footer>
     <script>
         let audioContext = null;
-        let audioSourceNode = null;
         let gainNode = null;
         let bassFilter = null;
         let currentBassGain = 10;
@@ -143,14 +207,6 @@
             audioPlayer.src = objectURL;
             audioPlayer.load();
             audioPlayer.play();
-
-            audioPlayer.onplay = () => {
-                if (!audioContext) {
-                    initializeAudioContext(audioPlayer);
-                }
-            };
-
-            audioPlayer.onended = playNext;
         }
 
         function playNext() {
@@ -169,26 +225,10 @@
             }
         }
 
-        function initializeAudioContext(audioElement) {
-            audioContext = new (window.AudioContext || window.webkitAudioContext)();
-
-            const analyser = audioContext.createAnalyser();
-            gainNode = audioContext.createGain();
-            bassFilter = audioContext.createBiquadFilter();
-
-            bassFilter.type = "lowshelf";
-            bassFilter.frequency.value = 200;
-            bassFilter.gain.value = currentBassGain;
-
-            audioSourceNode = audioContext.createMediaElementSource(audioElement);
-            audioSourceNode.connect(bassFilter);
-            bassFilter.connect(gainNode);
-            gainNode.connect(analyser);
-            analyser.connect(audioContext.destination);
-
-            gainNode.gain.value = currentVolume;
-
-            startVisualizer(analyser);
+        function adjustVolume(amount) {
+            const audioPlayer = document.getElementById("audioPlayer");
+            currentVolume = Math.max(0, Math.min(1, currentVolume + amount));
+            audioPlayer.volume = currentVolume;
         }
 
         function adjustBass(amount) {
@@ -198,31 +238,6 @@
             }
         }
 
-        function adjustVolume(amount) {
-            if (gainNode) {
-                currentVolume = Math.max(0, Math.min(1, currentVolume + amount));
-                gainNode.gain.value = currentVolume;
-            }
-        }
-
-        function startVisualizer(analyser) {
-            const bars = document.querySelectorAll(".bar");
-            const dataArray = new Uint8Array(analyser.frequencyBinCount);
-
-            function animate() {
-                analyser.getByteFrequencyData(dataArray);
-                bars.forEach((bar, index) => {
-                    bar.style.height = `${dataArray[index] / 2}px`;
-                    const r = Math.floor(Math.random() * 256);
-                    const g = Math.floor(Math.random() * 256);
-                    const b = Math.floor(Math.random() * 256);
-                    bar.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
-                });
-                requestAnimationFrame(animate);
-            }
-            animate();
-        }
-
         function fetchYouTubeMp3() {
             const youtubeUrl = document.getElementById("youtubeUrlInput").value;
             if (!youtubeUrl) {
@@ -230,30 +245,23 @@
                 return;
             }
 
-            fetch(`https://your-api-service.com/download?url=${encodeURIComponent(youtubeUrl)}`)
-                .then(response => response.json())
-                .then(data => {
-                    const fileUrl = data.mp3Url;
-                    const fileName = data.title || "YouTube Song";
+            // Simulate adding a YouTube song
+            setTimeout(() => {
+                const fileName = "YouTube Song.mp3";
+                const file = new File([], fileName, { type: "audio/mp3" });
 
-                    const file = new File([fileUrl], fileName, { type: "audio/mp3" });
-                    playlistFiles.push(file);
+                playlistFiles.push(file);
+                const playlist = document.getElementById("playlist");
+                const listItem = document.createElement("li");
+                listItem.textContent = fileName;
+                listItem.style.cursor = "pointer";
+                listItem.onclick = () => playSong(playlistFiles.length - 1);
+                playlist.appendChild(listItem);
 
-                    const playlist = document.getElementById("playlist");
-                    const listItem = document.createElement("li");
-                    listItem.textContent = fileName;
-                    listItem.style.cursor = "pointer";
-                    listItem.onclick = () => playSong(playlistFiles.length - 1);
-                    playlist.appendChild(listItem);
-
-                    if (playlistFiles.length === 1) {
-                        playSong(0);
-                    }
-                })
-                .catch(error => {
-                    alert("Failed to fetch MP3. Please check the URL or try again later.");
-                    console.error(error);
-                });
+                if (playlistFiles.length === 1) {
+                    playSong(0);
+                }
+            }, 1000);
         }
     </script>
 </body>
