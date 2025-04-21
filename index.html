@@ -46,11 +46,6 @@
             animation: progressColorCycling 5s infinite;
         }
 
-        #timeDisplay {
-            margin-top: 10px;
-            font-size: 1.2em;
-        }
-
         .controls button {
             padding: 10px 20px;
             font-size: 1em;
@@ -173,7 +168,6 @@
     <div id="progressBar">
         <div id="progressFill"></div>
     </div>
-    <div id="timeDisplay">00:00 / 00:00</div>
     <ul id="playlist"></ul>
     <div class="controls">
         <button onclick="playPrevious()">Back</button>
@@ -198,7 +192,6 @@
         const audioPlayer = document.getElementById("audioPlayer");
         const playlist = document.getElementById("playlist");
         const progressFill = document.getElementById("progressFill");
-        const timeDisplay = document.getElementById("timeDisplay");
 
         // Initialize the Web Audio API
         function initializeAudio() {
@@ -215,21 +208,11 @@
             }
         }
 
-        // Update progress bar and timing
+        // Update progress bar
         audioPlayer.ontimeupdate = () => {
             const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
             progressFill.style.width = `${progress}%`;
-
-            const currentTime = formatTime(audioPlayer.currentTime);
-            const duration = formatTime(audioPlayer.duration);
-            timeDisplay.textContent = `${currentTime} / ${duration}`;
         };
-
-        function formatTime(seconds) {
-            const mins = Math.floor(seconds / 60);
-            const secs = Math.floor(seconds % 60);
-            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-        }
 
         // Select songs using a file picker
         function selectSongs() {
