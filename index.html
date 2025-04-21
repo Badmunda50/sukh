@@ -11,9 +11,11 @@
             background-size: cover;
             color: white; /* Text color to contrast with the background */
         }
-        input[type="file"] {
+        input[type="file"], input[type="text"] {
             padding: 10px;
             margin-bottom: 20px;
+            width: 80%;
+            max-width: 400px;
         }
         audio {
             margin-top: 20px;
@@ -26,7 +28,7 @@
         button {
             padding: 10px 20px;
             font-size: 16px;
-            margin: 0 10px;
+            margin: 10px;
             cursor: pointer;
             background-color: rgba(0, 0, 0, 0.6);
             color: white;
@@ -79,6 +81,10 @@
         <button onclick="adjustVolume(-0.1)">- Volume</button>
         <button onclick="adjustVolume(0.1)">+ Volume</button>
     </div>
+    <div class="controls">
+        <input type="text" id="youtubeUrlInput" placeholder="Enter YouTube URL" />
+        <button onclick="fetchYouTubeMp3()">Add Song</button>
+    </div>
     <div class="visualizer" id="visualizer">
         <div class="bar"></div>
         <div class="bar"></div>
@@ -101,16 +107,16 @@
         let bassFilter = null;
         let currentBassGain = 10;
         let currentVolume = 1;
-        let currentSongIndex = 0; // To track the current song index
-        let playlistFiles = []; // Array to store playlist files
+        let currentSongIndex = 0;
+        let playlistFiles = [];
 
         function loadPlaylist() {
             const fileInput = document.getElementById("fileInput");
             const playlist = document.getElementById("playlist");
             const files = fileInput.files;
 
-            playlist.innerHTML = ""; // Clear playlist
-            playlistFiles = Array.from(files); // Store files in a global array
+            playlist.innerHTML = "";
+            playlistFiles = Array.from(files);
 
             if (playlistFiles.length > 10) {
                 alert("Please select up to 10 songs.");
@@ -129,12 +135,11 @@
         }
 
         function playSong(index) {
-            currentSongIndex = index; // Update current song index
+            currentSongIndex = index;
             const file = playlistFiles[index];
             const audioPlayer = document.getElementById("audioPlayer");
             const objectURL = URL.createObjectURL(file);
 
-            // Reset the audio player
             audioPlayer.src = objectURL;
             audioPlayer.load();
             audioPlayer.play();
@@ -145,7 +150,6 @@
                 }
             };
 
-            // Automatically play the next song when the current song ends
             audioPlayer.onended = playNext;
         }
 
@@ -168,27 +172,22 @@
         function initializeAudioContext(audioElement) {
             audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-            // Create audio nodes
             const analyser = audioContext.createAnalyser();
             gainNode = audioContext.createGain();
             bassFilter = audioContext.createBiquadFilter();
 
-            // Configure bass filter
             bassFilter.type = "lowshelf";
             bassFilter.frequency.value = 200;
             bassFilter.gain.value = currentBassGain;
 
-            // Connect nodes
             audioSourceNode = audioContext.createMediaElementSource(audioElement);
             audioSourceNode.connect(bassFilter);
             bassFilter.connect(gainNode);
             gainNode.connect(analyser);
             analyser.connect(audioContext.destination);
 
-            // Set initial volume
             gainNode.gain.value = currentVolume;
 
-            // Start visualizer
             startVisualizer(analyser);
         }
 
@@ -201,7 +200,7 @@
 
         function adjustVolume(amount) {
             if (gainNode) {
-                currentVolume = Math.max(0, Math.min(1, currentVolume + amount)); // Clamp between 0 and 1
+                currentVolume = Math.max(0, Math.min(1, currentVolume + amount));
                 gainNode.gain.value = currentVolume;
             }
         }
@@ -214,8 +213,6 @@
                 analyser.getByteFrequencyData(dataArray);
                 bars.forEach((bar, index) => {
                     bar.style.height = `${dataArray[index] / 2}px`;
-
-                    // Generate a random color for each bar
                     const r = Math.floor(Math.random() * 256);
                     const g = Math.floor(Math.random() * 256);
                     const b = Math.floor(Math.random() * 256);
@@ -224,6 +221,39 @@
                 requestAnimationFrame(animate);
             }
             animate();
+        }
+
+        function fetchYouTubeMp3() {
+            const youtubeUrl = document.getElementById("youtubeUrlInput").value;
+            if (!youtubeUrl) {
+                alert("Please enter a valid YouTube URL.");
+                return;
+            }
+
+            fetch(`https://your-api-service.com/download?url=${encodeURIComponent(youtubeUrl)}`)
+                .then(response => response.json())
+                .then(data => {
+                    const fileUrl = data.mp3Url;
+                    const fileName = data.title || "YouTube Song";
+
+                    const file = new File([fileUrl], fileName, { type: "audio/mp3" });
+                    playlistFiles.push(file);
+
+                    const playlist = document.getElementById("playlist");
+                    const listItem = document.createElement("li");
+                    listItem.textContent = fileName;
+                    listItem.style.cursor = "pointer";
+                    listItem.onclick = () => playSong(playlistFiles.length - 1);
+                    playlist.appendChild(listItem);
+
+                    if (playlistFiles.length === 1) {
+                        playSong(0);
+                    }
+                })
+                .catch(error => {
+                    alert("Failed to fetch MP3. Please check the URL or try again later.");
+                    console.error(error);
+                });
         }
     </script>
 </body>
