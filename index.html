@@ -78,6 +78,17 @@
                 box-shadow: 0 0 20px rgba(0, 255, 0, 1);
             }
         }
+
+        @keyframes colorCycling {
+            0% { color: red; }
+            33% { color: yellow; }
+            66% { color: blue; }
+            100% { color: green; }
+        }
+
+        .dynamic-color {
+            animation: colorCycling 2s infinite;
+        }
     </style>
 </head>
 <body>
@@ -106,6 +117,7 @@
         let playlistFiles = [];
         const badLogo = document.getElementById("badLogo");
         const audioPlayer = document.getElementById("audioPlayer");
+        const playlist = document.getElementById("playlist");
 
         // Initialize the Web Audio API
         function initializeAudio() {
@@ -133,7 +145,6 @@
         }
 
         function loadPlaylist(files) {
-            const playlist = document.getElementById("playlist");
             playlist.innerHTML = "";
             playlistFiles = Array.from(files);
 
@@ -159,7 +170,16 @@
             audioPlayer.play();
 
             // Animate the "Bad" logo when a song plays
-            badLogo.style.animation = "glowing 1s infinite alternate";
+            badLogo.style.animation = "none";
+            badLogo.style.background = "red"; // Change button color to red
+
+            // Change the currently playing song's line color
+            Array.from(playlist.children).forEach((item, idx) => {
+                item.classList.remove("dynamic-color");
+                if (idx === index) {
+                    item.classList.add("dynamic-color");
+                }
+            });
         }
 
         function playNext() {
@@ -190,36 +210,13 @@
             bassFilter.gain.value = currentBassGain;
         }
 
-        function fetchYouTubeMp3() {
-            const youtubeUrl = document.getElementById("youtubeUrlInput").value;
-            if (!youtubeUrl) {
-                alert("Please enter a valid YouTube URL.");
-                return;
-            }
-
-            // Simulate adding a YouTube song
-            setTimeout(() => {
-                const fileName = "YouTube Song.mp3";
-                const blob = new Blob([""], { type: "audio/mp3" });
-                const file = new File([blob], fileName, { type: "audio/mp3" });
-
-                playlistFiles.push(file);
-                const playlist = document.getElementById("playlist");
-                const listItem = document.createElement("li");
-                listItem.textContent = fileName;
-                listItem.style.cursor = "pointer";
-                listItem.onclick = () => playSong(playlistFiles.length - 1);
-                playlist.appendChild(listItem);
-
-                if (playlistFiles.length === 1) {
-                    playSong(0);
-                }
-            }, 1000);
-        }
-
-        // Stop animation when audio ends
+        // Reset "Bad" button when audio ends
         audioPlayer.onended = () => {
-            badLogo.style.animation = "none";
+            badLogo.style.animation = "glowing 1s infinite alternate";
+            badLogo.style.background = "linear-gradient(45deg, #00ff00, #00ff00, #00ff00)"; // Reset button color to green
+
+            // Stop dynamic color for the current song line
+            Array.from(playlist.children).forEach((item) => item.classList.remove("dynamic-color"));
         };
     </script>
 </body>
