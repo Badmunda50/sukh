@@ -18,6 +18,7 @@
         h1 {
             margin-top: 30px;
             font-size: 2.5em;
+            animation: colorCycling 2s infinite;
         }
 
         p {
@@ -37,14 +38,9 @@
             font-size: 1em;
             margin: 10px;
             cursor: pointer;
-            background-color: rgba(0, 0, 0, 0.6);
-            color: white;
             border: none;
             border-radius: 5px;
-        }
-
-        .controls button:hover {
-            background-color: rgba(255, 255, 255, 0.2);
+            animation: buttonColorCycling 2s infinite;
         }
 
         footer {
@@ -67,7 +63,7 @@
             border-radius: 50px;
             cursor: pointer;
             text-transform: uppercase;
-            animation: glowing 1s infinite alternate;
+            animation: glowing 1s infinite alternate, buttonColorCycling 2s infinite;
         }
 
         @keyframes glowing {
@@ -84,6 +80,13 @@
             33% { color: yellow; }
             66% { color: blue; }
             100% { color: green; }
+        }
+
+        @keyframes buttonColorCycling {
+            0% { background-color: red; }
+            33% { background-color: yellow; }
+            66% { background-color: blue; }
+            100% { background-color: green; }
         }
 
         .dynamic-color {
@@ -169,10 +172,6 @@
             audioPlayer.load();
             audioPlayer.play();
 
-            // Animate the "Bad" logo when a song plays
-            badLogo.style.animation = "none";
-            badLogo.style.background = "red"; // Change button color to red
-
             // Change the currently playing song's line color
             Array.from(playlist.children).forEach((item, idx) => {
                 item.classList.remove("dynamic-color");
@@ -210,12 +209,8 @@
             bassFilter.gain.value = currentBassGain;
         }
 
-        // Reset "Bad" button when audio ends
+        // Reset dynamic styles when audio ends
         audioPlayer.onended = () => {
-            badLogo.style.animation = "glowing 1s infinite alternate";
-            badLogo.style.background = "linear-gradient(45deg, #00ff00, #00ff00, #00ff00)"; // Reset button color to green
-
-            // Stop dynamic color for the current song line
             Array.from(playlist.children).forEach((item) => item.classList.remove("dynamic-color"));
         };
     </script>
